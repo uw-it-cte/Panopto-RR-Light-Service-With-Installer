@@ -386,6 +386,20 @@ namespace RRLightProgram
             return true;
         }
 
+        //Flash light
+        private static bool ActionNotQueuedButtonPressed(
+            StateMachine control,
+            RRState currentState,
+            StateMachineInputArgs inputArgs
+            )
+        {
+            control.light.ChangeColor(DelcomColor.Red, true, TimeSpan.FromMilliseconds(300));
+            Thread.Sleep(300);
+            control.light.ChangeColor(DelcomColor.Off);
+
+            return true;
+        }
+
         //Turn off light for ending loop
         private static bool ActionLast(
             StateMachine control,
@@ -509,7 +523,8 @@ namespace RRLightProgram
             Running = 11,
             CantRecordButtonDown = 12,
             CantRecordButtonUp = 13,
-            LAST = 14,
+            CantRecordButtonPressed = 14,
+            LAST = 15,
         };
 
         // Must be kept in sync with enum ActionID
@@ -529,6 +544,7 @@ namespace RRLightProgram
             new StateMachineAction(ActionRRRunning),
             new StateMachineAction(ActionNotQueuedButtonDown),
             new StateMachineAction(ActionNotQueuedButtonUp),
+            new StateMachineAction(ActionNotQueuedButtonPressed),
             new StateMachineAction(ActionLast),
         };
 
@@ -566,10 +582,10 @@ namespace RRLightProgram
                 new Transition(RRS.RRPreviewing,       StateMachineInput.RecorderStopped,               ActionId.Stop,                  RRS.RRStopped),
                 new Transition(RRS.RRPreviewing,       StateMachineInput.RecorderRunning,               ActionId.Running,               RRS.RRRunning),
                 new Transition(RRS.RRPreviewing,       StateMachineInput.Disconnected,                  ActionId.FaultDisconnect,       RRS.RRDisconnected),
-                new Transition(RRS.RRPreviewing,       StateMachineInput.ButtonPressed,                 ActionId.Noop,                  RRS.RRPreviewing),
+                new Transition(RRS.RRPreviewing,       StateMachineInput.ButtonPressed,                 ActionId.CantRecordButtonPressed, RRS.RRPreviewing),
                 new Transition(RRS.RRPreviewing,       StateMachineInput.ButtonHeld,                    ActionId.Noop,                  RRS.RRPreviewing),
-                new Transition(RRS.RRPreviewing,       StateMachineInput.ButtonDown,                    ActionId.CantRecordButtonDown,   RRS.RRPreviewing),
-                new Transition(RRS.RRPreviewing,       StateMachineInput.ButtonUp,                      ActionId.CantRecordButtonUp,     RRS.RRPreviewing),
+                new Transition(RRS.RRPreviewing,       StateMachineInput.ButtonDown,                    ActionId.Noop,                  RRS.RRPreviewing),
+                new Transition(RRS.RRPreviewing,       StateMachineInput.ButtonUp,                      ActionId.Noop,                  RRS.RRPreviewing),
             },
             {
                 new Transition(RRS.RRPreviewingQueued, StateMachineInput.NoInput,                       ActionId.Noop,                  RRS.RRPreviewingQueued),
