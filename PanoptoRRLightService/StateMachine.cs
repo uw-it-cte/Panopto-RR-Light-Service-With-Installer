@@ -47,6 +47,12 @@ namespace RRLightProgram
         /// </summary>
         private ILightControl light;
 
+        /// <summary>
+        /// Interface for console I/O.
+        /// This cannot be null. Empty implementation is attached if the caller does not pass it.
+        /// </summary>
+        private IConsole console;
+
         #endregion Variables
 
         #region Initialization and cleanup
@@ -64,7 +70,8 @@ namespace RRLightProgram
         /// </summary>
         /// <param name="remoteRecorder">Remote recorder controller. Cannot be null.</param>
         /// <param name="lightControl">Light control interface. May be null.</param>
-        public void Start(RemoteRecorderSync remoteRecorder, ILightControl lightControl)
+        /// <param name="console">Console interface. May be null.</param>
+        public void Start(RemoteRecorderSync remoteRecorder, ILightControl lightControl, IConsole console)
         {
             if (remoteRecorder == null)
             {
@@ -77,6 +84,7 @@ namespace RRLightProgram
 
             this.remoteRecorder = remoteRecorder;
             this.light = lightControl ?? new EmptyLightControl();
+            this.console = console;
 
             this.inputProcessThread = new Thread(this.InputProcessLoop);
             TraceVerbose.Trace("State machine is starting.");
@@ -165,10 +173,12 @@ namespace RRLightProgram
                     if (transition.ActionMethod(input))
                     {
                         this.state = transition.NextState;
+                        this.console.Output(input.ToString() + " OK");
                     }
                     else
                     {
                         Trace.TraceError("{0} failed. State stays at {1}", transition.ActionMethod.Method.Name, this.state);
+                        this.console.Output(input.ToString() + " ERROR");
                     }
                 }
                 else
@@ -587,5 +597,14 @@ namespace RRLightProgram
         }
 
         #endregion Empty ILightControl
+
+        #region Empty IConsole
+
+        class EmptyConsole : IConsole
+        {
+            public void Output(String str) { }
+        }
+
+        #endregion Empty IConsole
     }
 }

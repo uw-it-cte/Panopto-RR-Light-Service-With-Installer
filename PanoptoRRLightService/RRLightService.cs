@@ -21,6 +21,8 @@ namespace RRLightProgram
 
         private DelcomLight delcomLight = null;
 
+        private SerialComm serialComm = null;
+
         /// <summary>
         /// Constrocutor.
         /// </summary>
@@ -47,6 +49,7 @@ namespace RRLightProgram
             EnsureCertificateValidation();
 
             ILightControl lightControl = null;
+            IConsole console = null;
 
             this.stateMachine = new StateMachine();
 
@@ -65,13 +68,30 @@ namespace RRLightProgram
                 }
             }
             // TODO: add here for device specific start up when another device type is added.
+            else if (string.IsNullOrWhiteSpace(Properties.Settings.Default.DeviceType))
+            {
+                Trace.TraceInformation("No device type specified. Skipping.");
+            }
             else
             {
                 throw new InvalidOperationException("Specified device type is not supported: " + Properties.Settings.Default.DeviceType);
             }
 
+            if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.SerialPortName))
+            {
+                // Set up serial port
+                this.serialComm = new SerialComm((IStateMachine)this.stateMachine);
+                console = this.serialComm as IConsole;
+
+                if (!this.serialComm.Start())
+                {
+                    Trace.TraceError("Failed to start up Serial component. Terminate.");
+                    throw new ApplicationException("Failed to start up Serial component. Terminate.");
+                }
+            }
+
             // Start processing of the state machine.
-            this.stateMachine.Start(this.remoteRecorderSync, lightControl);
+            this.stateMachine.Start(this.remoteRecorderSync, lightControl, console);
         }
 
         /// <summary>
