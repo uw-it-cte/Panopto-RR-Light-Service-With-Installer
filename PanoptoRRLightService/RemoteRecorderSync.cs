@@ -221,6 +221,29 @@ namespace RRLightProgram
             }
         }
 
+        private bool RecordingEquals(Recording recordingA, Recording recordingB)
+        {
+            if (recordingA == null && recordingB == null)
+            {
+                return true;
+            }
+
+            if (recordingA == null || recordingB == null)
+            {
+                return false;
+            }
+
+            if (recordingA.Id == recordingB.Id &&
+                recordingA.Name == recordingB.Name &&
+                recordingA.StartTime == recordingB.StartTime &&
+                recordingA.EndTime == recordingB.EndTime)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         ///  Runs on a background thread to monitor the remoterecorder state and will dispatch events back to the
         ///  main thread when the state changes.
@@ -228,17 +251,25 @@ namespace RRLightProgram
         private void BackgroundPollingWorker()
         {
             StateMachine.StateMachineInput previousState = MapRRStateToSMInput(RemoteRecorderStatus.Disconnected);
+            Recording previousRecordingData = null;
 
             Exception exceptionInRR = null;
 
             while (!this.shouldStop)
             {
                 StateMachine.StateMachineInput? state = null;
+                Recording recordingData = null;
 
                 try
                 {
                     // Get the current state from the RR process
                     state = MapRRStateToSMInput(controller.GetCurrentState().Status);
+
+                    recordingData = controller.GetCurrentState().CurrentRecording;
+                    if (recordingData == null)
+                    {
+                        recordingData = controller.GetNextRecording();
+                    }
                 }
                 catch (Exception e)
                 {
@@ -248,13 +279,14 @@ namespace RRLightProgram
                 }
 
                 //If state changed, input new state to state machine
-                if (state != previousState)
+                if (state != previousState || !RecordingEquals(recordingData, previousRecordingData))
                 {
                     StateMachine.StateMachineInput stateMachineInput = (StateMachine.StateMachineInput)state;
 
                     if (stateMachineInput != StateMachine.StateMachineInput.NoInput)
                     {
-                        StateMachine.StateMachineInputArgs args = new StateMachine.StateMachineInputArgs(stateMachineInput);
+                        StateMachine.StateMachineInputArgs args = new StateMachine.StateMachineInputArgs(
+                            stateMachineInput, recordingData);
 
                         if (stateMachineInputCallback != null)
                         {
@@ -263,6 +295,7 @@ namespace RRLightProgram
                     }
 
                     previousState = stateMachineInput;
+                    previousRecordingData = recordingData;
                 }
 
                 // Handle exception after SM has been updated
