@@ -105,18 +105,18 @@ Recording-MinutesUntilEndTime   | Minutes until end of recording
 
 Possible values for Recorder-State are:
 
-Recorder-State     | 
--------------------|
-Init               |
-RRPreviewing       |
-RRPreviewingQueued |
-RRRecordingWait    |
-RRRecording        |
-RRPausedWait       |
-RRPaused           |
-RRStoppingPaused   |
-RRStoppingRecord   |
-RRStopped          |
-RRRunning          |
-RRFaulted          |
-RRDisconnected     |
+Recorder-State     | Description
+-------------------|----------------------------------------------------------------
+Init               | Service is initializing, Remote Recorder state unknown
+RRPreviewing       | Previewing (Idle)
+RRPreviewingQueued | Previewing, a recording is queued to start within the next hour
+RRRecordingWait    | Paused or Previewing w/Queued, attempting to Resume/Start
+RRRecording        | Recording
+RRPausedWait       | Recording, attempting to Pause
+RRPaused           | Paused
+RRStoppingPaused   | Paused, attempting to Stop
+RRStoppingRecord   | Recording, attempting to Stop
+RRStopped          | Stopped
+RRRunning          | Blocked, i.e. the Local Recorder is Running
+RRFaulted          | Faulted
+RRDisconnected     | Disconnected, or not found
