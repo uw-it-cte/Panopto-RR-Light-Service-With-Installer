@@ -94,14 +94,20 @@ In response to a STATUS command, data will be output in the format:
 Possble data keywords are:
 
 Keyword                         | Description
---------------------------------|----------------------------------------------------------
+--------------------------------|---------------------------------------------
 Recorder-State                  | The current state of the remote recorder
-Recording-Id                    | Id (GUID) of the current (or currently queued) recording
-Recording-Name                  | Name of the current (or currently queued) recording
-Recording-StartTime             | Start time of the current (or currently queued) recording
-Recording-EndTime               | End time of the current (or currently queued) recording
-Recording-MinutesUntilStartTime | Minutes until start of recording
-Recording-MinutesUntilEndTime   | Minutes until end of recording
+Recording-Id                    | Id (GUID) of the current recording
+Recording-Name                  | Name of the current recording
+Recording-StartTime             | Start time of the current recording
+Recording-EndTime               | End time of the current recording
+Recording-MinutesUntilStartTime | Minutes until start of the current recording
+Recording-MinutesUntilEndTime   | Minutes until end of the current recording
+Queued-Id                       | Id (GUID) of the queued recording
+Queued-Name                     | Name of the queued recording
+Queued-StartTime                | Start time of the queued recording
+Queued-EndTime                  | End time of the queued recording
+Queued-MinutesUntilStartTime    | Minutes until start of the queued recording
+Queued-MinutesUntilEndTime      | Minutes until end of the queued recording
 
 Possible values for Recorder-State are:
 

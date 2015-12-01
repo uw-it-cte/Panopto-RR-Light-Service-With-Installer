@@ -223,6 +223,7 @@ namespace RRLightProgram
         {
             control.light.ChangeColor(DelcomColor.Off);
             control.m_recording = null;
+            control.m_queued = null;
 
             return true;
         }
@@ -358,6 +359,7 @@ namespace RRLightProgram
         {
             control.light.ChangeColor(DelcomColor.Off);
             control.m_recording = null;
+            control.m_queued = null;
 
             return true;
         }
@@ -371,6 +373,7 @@ namespace RRLightProgram
         {
             control.light.ChangeColor(DelcomColor.Red);
             control.m_recording = null;
+            control.m_queued = null;
 
             return true;
         }
@@ -465,6 +468,17 @@ namespace RRLightProgram
                 control.serial.SerialOutput("Recording-MinutesUntilEndTime: " +
                     (int)(control.m_recording.EndTime.ToLocalTime() - DateTime.Now.ToLocalTime()).TotalMinutes);
             }
+            if (control.m_queued != null)
+            {
+                control.serial.SerialOutput("Queued-Id: " + control.m_queued.Id);
+                control.serial.SerialOutput("Queued-Name: " + control.m_queued.Name);
+                control.serial.SerialOutput("Queued-StartTime: " + control.m_queued.StartTime.ToLocalTime());
+                control.serial.SerialOutput("Queued-EndTime: " + control.m_queued.EndTime.ToLocalTime());
+                control.serial.SerialOutput("Queued-MinutesUntilStartTime: " +
+                    (int)(control.m_queued.StartTime.ToLocalTime() - DateTime.Now.ToLocalTime()).TotalMinutes);
+                control.serial.SerialOutput("Queued-MinutesUntilEndTime: " +
+                    (int)(control.m_queued.EndTime.ToLocalTime() - DateTime.Now.ToLocalTime()).TotalMinutes);
+            }
             return true;
         }
 
@@ -515,9 +529,11 @@ namespace RRLightProgram
                 this.serial.SerialOutput(inputArgs.Input.ToString() + " ERROR");
             }
 
-            if (inputArgs.Data is Recording)
+            if (inputArgs.Data is Dictionary<string, object>)
             {
-                m_recording = (Recording)inputArgs.Data;
+                Dictionary<string, object> dict = (Dictionary<string, object>)inputArgs.Data;
+                m_recording = (Recording)dict["Recording"];
+                m_queued = (Recording)dict["Queued"];
             }
 
             m_lastStateMachineInput = inputArgs.Input;
@@ -874,6 +890,7 @@ namespace RRLightProgram
         //Set initial state and input
         private RRState m_SMState = RRState.Init;
         private Recording m_recording = null;
+        private Recording m_queued = null;
 
         private StateMachineInput m_lastStateMachineInput = StateMachineInput.NoInput;
 

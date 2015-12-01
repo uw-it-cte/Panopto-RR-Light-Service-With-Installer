@@ -1,5 +1,6 @@
 ﻿using Panopto.RemoteRecorderAPI.V1;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.ServiceModel;
@@ -252,6 +253,7 @@ namespace RRLightProgram
         {
             StateMachine.StateMachineInput previousState = MapRRStateToSMInput(RemoteRecorderStatus.Disconnected);
             Recording previousRecordingData = null;
+            Recording previousQueuedData = null;
 
             Exception exceptionInRR = null;
 
@@ -259,6 +261,7 @@ namespace RRLightProgram
             {
                 StateMachine.StateMachineInput? state = null;
                 Recording recordingData = null;
+                Recording queuedData = null;
 
                 try
                 {
@@ -266,10 +269,7 @@ namespace RRLightProgram
                     state = MapRRStateToSMInput(controller.GetCurrentState().Status);
 
                     recordingData = controller.GetCurrentState().CurrentRecording;
-                    if (recordingData == null)
-                    {
-                        recordingData = controller.GetNextRecording();
-                    }
+                    queuedData = controller.GetNextRecording();
                 }
                 catch (Exception e)
                 {
@@ -279,14 +279,20 @@ namespace RRLightProgram
                 }
 
                 //If state changed, input new state to state machine
-                if (state != previousState || !RecordingEquals(recordingData, previousRecordingData))
+                if (state != previousState ||
+                    !RecordingEquals(recordingData, previousRecordingData) ||
+                    !RecordingEquals(queuedData, previousQueuedData))
                 {
                     StateMachine.StateMachineInput stateMachineInput = (StateMachine.StateMachineInput)state;
+                    var stateMachineData = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase) {
+                            { "Recording", recordingData },
+                            { "Queued", queuedData },
+                        };
 
                     if (stateMachineInput != StateMachine.StateMachineInput.NoInput)
                     {
                         StateMachine.StateMachineInputArgs args = new StateMachine.StateMachineInputArgs(
-                            stateMachineInput, recordingData);
+                            stateMachineInput, stateMachineData);
 
                         if (stateMachineInputCallback != null)
                         {
@@ -296,6 +302,7 @@ namespace RRLightProgram
 
                     previousState = stateMachineInput;
                     previousRecordingData = recordingData;
+                    previousQueuedData = queuedData;
                 }
 
                 // Handle exception after SM has been updated
