@@ -532,8 +532,14 @@ namespace RRLightProgram
             if (inputArgs.Data is Dictionary<string, object>)
             {
                 Dictionary<string, object> dict = (Dictionary<string, object>)inputArgs.Data;
-                m_recording = (Recording)dict["Recording"];
-                m_queued = (Recording)dict["Queued"];
+                if (dict.ContainsKey("Recording"))
+                {
+                    m_recording = (Recording)dict["Recording"];
+                }
+                if (dict.ContainsKey("Queued"))
+                {
+                    m_queued = (Recording)dict["Queued"];
+                }
             }
 
             m_lastStateMachineInput = inputArgs.Input;
