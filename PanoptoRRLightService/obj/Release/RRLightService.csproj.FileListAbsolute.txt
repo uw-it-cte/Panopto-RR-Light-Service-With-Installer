@@ -1,9 +1,8 @@
-C:\Users\bradleyb\Documents\GitHubVisualStudio\Panopto-RR-Light-Service-With-Installer\PanoptoRRLightService\bin\Release\RRLightService.exe.config
 C:\Users\bradleyb\Documents\GitHubVisualStudio\Panopto-RR-Light-Service-With-Installer\PanoptoRRLightService\bin\Release\RemoteRecorderAPI.dll
 C:\Users\bradleyb\Documents\GitHubVisualStudio\Panopto-RR-Light-Service-With-Installer\PanoptoRRLightService\bin\Release\DelcomDLL.dll
+C:\Users\bradleyb\Documents\GitHubVisualStudio\Panopto-RR-Light-Service-With-Installer\PanoptoRRLightService\bin\Release\RRLightService.exe.config
 C:\Users\bradleyb\Documents\GitHubVisualStudio\Panopto-RR-Light-Service-With-Installer\PanoptoRRLightService\bin\Release\RRLightService.exe
 C:\Users\bradleyb\Documents\GitHubVisualStudio\Panopto-RR-Light-Service-With-Installer\PanoptoRRLightService\bin\Release\RRLightService.pdb
-C:\Users\bradleyb\Documents\GitHubVisualStudio\Panopto-RR-Light-Service-With-Installer\PanoptoRRLightService\obj\Release\RRLightService.csprojResolveAssemblyReference.cache
 C:\Users\bradleyb\Documents\GitHubVisualStudio\Panopto-RR-Light-Service-With-Installer\PanoptoRRLightService\obj\Release\RRLightProgram.ProjectInstaller.resources
 C:\Users\bradleyb\Documents\GitHubVisualStudio\Panopto-RR-Light-Service-With-Installer\PanoptoRRLightService\obj\Release\RRLightService.csproj.GenerateResource.Cache
 C:\Users\bradleyb\Documents\GitHubVisualStudio\Panopto-RR-Light-Service-With-Installer\PanoptoRRLightService\obj\Release\RRLightService.exe
