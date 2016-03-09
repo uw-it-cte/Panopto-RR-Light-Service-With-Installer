@@ -7,3 +7,4 @@ C:\Users\bradleyb\Documents\GitHubVisualStudio\Panopto-RR-Light-Service-With-Ins
 C:\Users\bradleyb\Documents\GitHubVisualStudio\Panopto-RR-Light-Service-With-Installer\PanoptoRRLightService\obj\Release\RRLightService.csproj.GenerateResource.Cache
 C:\Users\bradleyb\Documents\GitHubVisualStudio\Panopto-RR-Light-Service-With-Installer\PanoptoRRLightService\obj\Release\RRLightService.exe
 C:\Users\bradleyb\Documents\GitHubVisualStudio\Panopto-RR-Light-Service-With-Installer\PanoptoRRLightService\obj\Release\RRLightService.pdb
+C:\Users\bradleyb\Documents\GitHubVisualStudio\Panopto-RR-Light-Service-With-Installer\PanoptoRRLightService\obj\Release\RRLightService.csprojResolveAssemblyReference.cache
