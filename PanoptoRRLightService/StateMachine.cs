@@ -1,10 +1,13 @@
-﻿// Uncomment the below to turn on debug output for this state machine
+// Uncomment the below to turn on debug output for this state machine
 // #define s_debugoutput
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
+using Panopto.RemoteRecorderAPI.V1;
 
 namespace RRLightProgram
 {
@@ -350,6 +353,29 @@ namespace RRLightProgram
             return startNext;
         }
 
+        //Start new recording and turn green light on
+        private static bool ActionRecordNew(
+            StateMachine control,
+            RRState currentState,
+            StateMachineInputArgs inputArgs
+            )
+        {
+            bool startNext = false;
+            if (control.rrSync.SupportsStartNewRecording)
+            {
+                control.light.ChangeColor(DelcomColor.Green, false, null);
+                startNext = control.rrSync.StartNewRecording();
+            }
+            else
+            {
+                //If we can't start the next recording, flash red for 2 seconds then return the light to off before returning false
+                control.light.ChangeColor(DelcomColor.Red, false, TimeSpan.FromMilliseconds(2000));
+                Thread.Sleep(2000);
+                control.light.ChangeColor(DelcomColor.Off);
+            }
+            return startNext;
+        }
+
         //Turn light off for preview
         private static bool ActionPreview(
             StateMachine control,
@@ -402,8 +428,34 @@ namespace RRLightProgram
             return true;
         }
 
+        //Turn light red
+        private static bool ActionPreviewingButtonDown(
+            StateMachine control,
+            RRState currentState,
+            StateMachineInputArgs inputArgs
+            )
+        {
+            if (!control.rrSync.SupportsStartNewRecording)
+            {
+                control.light.ChangeColor(DelcomColor.Red);
+            }
+            return true;
+        }
+
         //Turn light off
         private static bool ActionNotQueuedButtonUp(
+            StateMachine control,
+            RRState currentState,
+            StateMachineInputArgs inputArgs
+            )
+        {
+            control.light.ChangeColor(DelcomColor.Off);
+
+            return true;
+        }
+
+        //Turn light off
+        private static bool ActionPreviewingButtonUp(
             StateMachine control,
             RRState currentState,
             StateMachineInputArgs inputArgs
@@ -518,7 +570,7 @@ namespace RRLightProgram
             }
 
             StateMachineAction action = m_actionTable[(int)transition.actionId];
-                
+
             if (action(this, State, inputArgs))
             {
                 m_SMState = transition.newState;
@@ -568,15 +620,18 @@ namespace RRLightProgram
             IsPaused = 6,
             Recording = 7,
             Next = 8,
-            Preview = 9,
-            FaultDisconnect = 10,
-            Running = 11,
-            CantRecordButtonDown = 12,
-            CantRecordButtonUp = 13,
-            ExtendPaused = 14,
-            ExtendRecording = 15,
-            GetStatus = 16,
-            LAST = 17,
+            New = 9,
+            Preview = 10,
+            FaultDisconnect = 11,
+            Running = 12,
+            CantRecordButtonDown = 13,
+            CantRecordButtonUp = 14,
+            PreviewingButtonDown = 15,
+            PreviewingButtonUp = 16,
+            ExtendPaused = 17,
+            ExtendRecording = 18,
+            GetStatus = 19,
+            LAST = 20,
         };
 
         // Must be kept in sync with enum ActionID
@@ -591,11 +646,14 @@ namespace RRLightProgram
             new StateMachineAction(ActionRRIsPaused),
             new StateMachineAction(ActionRRRecording),
             new StateMachineAction(ActionRecordNext),
+            new StateMachineAction(ActionRecordNew),
             new StateMachineAction(ActionPreview),
             new StateMachineAction(ActionRRFaultOrDisconnect),
             new StateMachineAction(ActionRRRunning),
             new StateMachineAction(ActionNotQueuedButtonDown),
             new StateMachineAction(ActionNotQueuedButtonUp),
+            new StateMachineAction(StateMachine.ActionPreviewingButtonDown),
+            new StateMachineAction(StateMachine.ActionPreviewingButtonUp),
             new StateMachineAction(ActionExtendPaused),
             new StateMachineAction(ActionExtendRecording),
             new StateMachineAction(ActionGetStatus),
@@ -643,9 +701,9 @@ namespace RRLightProgram
                 new Transition(RRS.RRPreviewing,       StateMachineInput.RecorderRunning,               ActionId.Running,               RRS.RRRunning),
                 new Transition(RRS.RRPreviewing,       StateMachineInput.Disconnected,                  ActionId.FaultDisconnect,       RRS.RRDisconnected),
                 new Transition(RRS.RRPreviewing,       StateMachineInput.ButtonPressed,                 ActionId.Noop,                  RRS.RRPreviewing),
-                new Transition(RRS.RRPreviewing,       StateMachineInput.ButtonHeld,                    ActionId.Noop,                  RRS.RRPreviewing),
-                new Transition(RRS.RRPreviewing,       StateMachineInput.ButtonDown,                    ActionId.CantRecordButtonDown,   RRS.RRPreviewing),
-                new Transition(RRS.RRPreviewing,       StateMachineInput.ButtonUp,                      ActionId.CantRecordButtonUp,     RRS.RRPreviewing),
+                new Transition(RRS.RRPreviewing,       StateMachineInput.ButtonHeld,                    ActionId.New,                   RRS.RRRecordingWait),
+                new Transition(RRS.RRPreviewing,       StateMachineInput.ButtonDown,                    ActionId.PreviewingButtonDown,  RRS.RRPreviewing),
+                new Transition(RRS.RRPreviewing,       StateMachineInput.ButtonUp,                      ActionId.PreviewingButtonUp,    RRS.RRPreviewing),
                 new Transition(RRS.RRPreviewing,       StateMachineInput.CommandStart,                  ActionId.Noop,                  RRS.RRPreviewing),
                 new Transition(RRS.RRPreviewing,       StateMachineInput.CommandStop,                   ActionId.Noop,                  RRS.RRPreviewing),
                 new Transition(RRS.RRPreviewing,       StateMachineInput.CommandPause,                  ActionId.Noop,                  RRS.RRPreviewing),
