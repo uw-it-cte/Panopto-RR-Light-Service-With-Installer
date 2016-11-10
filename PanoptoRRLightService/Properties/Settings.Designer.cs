@@ -121,5 +121,23 @@ namespace RRLightProgram.Properties {
                 return ((string)(this["SerialPortStopBits"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TcpServer {
+            get {
+                return ((bool)(this["TcpServer"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3000")]
+        public int TcpServerPort {
+            get {
+                return ((int)(this["TcpServerPort"]));
+            }
+        }
     }
 }

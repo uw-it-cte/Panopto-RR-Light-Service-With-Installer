@@ -23,6 +23,8 @@ namespace RRLightProgram
 
         private SerialComm serialComm = null;
 
+        private TcpComm tcpComm = null;
+
         /// <summary>
         /// Constrocutor.
         /// </summary>
@@ -89,6 +91,11 @@ namespace RRLightProgram
                     throw new ApplicationException("Failed to start up Serial component. Terminate.");
                 }
             }
+            else if (Properties.Settings.Default.TcpServer)
+            {
+                this.tcpComm = new TcpComm((IStateMachine)this.stateMachine, this.remoteRecorderSync);
+                console = this.tcpComm as IConsole;
+            }
 
             // Start processing of the state machine.
             this.stateMachine.Start(this.remoteRecorderSync, lightControl, console);
@@ -121,6 +128,12 @@ namespace RRLightProgram
             {
                 this.stateMachine.Stop();
                 this.stateMachine = null;
+            }
+
+            if (this.tcpComm != null)
+            {
+                this.tcpComm.Stop();
+                this.tcpComm = null;
             }
         }
 
