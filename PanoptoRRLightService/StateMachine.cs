@@ -70,8 +70,7 @@ namespace RRLightProgram
         /// </summary>
         /// <param name="remoteRecorder">Remote recorder controller. Cannot be null.</param>
         /// <param name="lightControl">Light control interface. May be null.</param>
-        /// <param name="console">Console interface. May be null.</param>
-        public void Start(RemoteRecorderSync remoteRecorder, ILightControl lightControl, IConsole console)
+        public void Start(RemoteRecorderSync remoteRecorder, ILightControl lightControl)
         {
             if (remoteRecorder == null)
             {
@@ -84,7 +83,7 @@ namespace RRLightProgram
 
             this.remoteRecorder = remoteRecorder;
             this.light = lightControl ?? new EmptyLightControl();
-            this.console = console;
+            this.console = lightControl;
 
             this.inputProcessThread = new Thread(this.InputProcessLoop);
             TraceVerbose.Trace("State machine is starting.");
@@ -630,14 +629,5 @@ namespace RRLightProgram
         }
 
         #endregion Empty ILightControl
-
-        #region Empty IConsole
-
-        class EmptyConsole : IConsole
-        {
-            public void Output(String str) { }
-        }
-
-        #endregion Empty IConsole
     }
 }

@@ -70,7 +70,6 @@
     <Compile Include="Delcom\DelcomDll.cs" />
     <Compile Include="Delcom\DelcomLight.cs" />
     <Compile Include="Delcom\DelcomLightWrapper.cs" />
-    <Compile Include="IConsole.cs" />
     <Compile Include="ILightControl.cs" />
     <Compile Include="IStateMachine.cs" />
     <Compile Include="ProjectInstaller.cs">

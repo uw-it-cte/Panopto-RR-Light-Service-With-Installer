@@ -4,7 +4,7 @@ using System.IO.Ports;
 
 namespace RRLightProgram
 {
-    public class SerialComm : IConsole
+    public class SerialComm : ILightControl
     {
         #region Variables
 
@@ -87,6 +87,9 @@ namespace RRLightProgram
             Trace.TraceInformation(DateTime.Now + ": Serial Tx: " + str);
             this.portObj.WriteLine(str);
         }
+
+        public void SetSolid(LightColor color) { }
+        public void SetFlash(LightColor color) { }
 
         #endregion
 

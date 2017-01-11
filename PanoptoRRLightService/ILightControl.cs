@@ -25,6 +25,12 @@ namespace RRLightProgram
         /// </summary>
         /// <param name="color">Color to be used. Cannot be Off.</param>
         void SetFlash(LightColor color);
+
+        /// <summary>
+        /// Output a message
+        /// </summary>
+        /// <param name="message">Message to be sent</param>
+        void Output(String str);
     }
 
     /// <summary>

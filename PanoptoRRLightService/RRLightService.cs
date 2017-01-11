@@ -49,7 +49,6 @@ namespace RRLightProgram
             EnsureCertificateValidation();
 
             ILightControl lightControl = null;
-            IConsole console = null;
 
             this.stateMachine = new StateMachine();
 
@@ -67,21 +66,11 @@ namespace RRLightProgram
                     throw new ApplicationException("Failed to start up Delcom Light component. Terminate.");
                 }
             }
-            // TODO: add here for device specific start up when another device type is added.
-            else if (string.IsNullOrWhiteSpace(Properties.Settings.Default.DeviceType))
-            {
-                Trace.TraceInformation("No device type specified. Skipping.");
-            }
-            else
-            {
-                throw new InvalidOperationException("Specified device type is not supported: " + Properties.Settings.Default.DeviceType);
-            }
-
-            if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.SerialPortName))
+            else if (string.Compare(Properties.Settings.Default.DeviceType, "Serial", StringComparison.OrdinalIgnoreCase) == 0)
             {
                 // Set up serial port
                 this.serialComm = new SerialComm((IStateMachine)this.stateMachine);
-                console = this.serialComm as IConsole;
+                lightControl = this.serialComm as ILightControl;
 
                 if (!this.serialComm.Start())
                 {
@@ -89,8 +78,13 @@ namespace RRLightProgram
                     throw new ApplicationException("Failed to start up Serial component. Terminate.");
                 }
             }
+            // TODO: add here for device specific start up when another device type is added.
+            else
+            {
+                throw new InvalidOperationException("Specified device type is not supported: " + Properties.Settings.Default.DeviceType);
+            }
 
-            // Start processing of the state machine.
+             // Start processing of the state machine.
             this.stateMachine.Start(this.remoteRecorderSync, lightControl, console);
         }
 
